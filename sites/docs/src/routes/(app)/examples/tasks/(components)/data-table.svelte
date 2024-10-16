@@ -2,6 +2,7 @@
 	import {
 		type ColumnDef,
 		type ColumnFiltersState,
+		type PaginationState,
 		type RowSelectionState,
 		type SortingState,
 		type VisibilityState,
@@ -21,12 +22,20 @@
 	import FlexRender from "$lib/registry/new-york/ui/data-table/flex-render.svelte";
 	import * as Table from "$lib/registry/new-york/ui/table/index.js";
 
-	let { columns, data }: { columns: ColumnDef<TData, TValue>[]; data: TData[] } = $props();
+	let {
+		columns,
+		data,
+		defaultPageSize = 10,
+	}: { columns: ColumnDef<TData, TValue>[]; data: TData[]; defaultPageSize: number } = $props();
 
 	const [getRowSelection, setRowSelection] = createTableState<RowSelectionState>({});
 	const [getColumnVisibility, setColumnVisibility] = createTableState<VisibilityState>({});
 	const [getColumnFilters, setColumnFilters] = createTableState<ColumnFiltersState>([]);
 	const [getSorting, setSorting] = createTableState<SortingState>([]);
+	const [getPagination, setPagination] = createTableState<PaginationState>({
+		pageIndex: 0,
+		pageSize: defaultPageSize,
+	});
 
 	const table = createSvelteTable({
 		get data() {
@@ -45,6 +54,9 @@
 			get columnFilters() {
 				return getColumnFilters();
 			},
+			get pagination() {
+				return getPagination();
+			},
 		},
 		columns,
 		enableRowSelection: true,
@@ -52,6 +64,7 @@
 		onSortingChange: setSorting,
 		onColumnFiltersChange: setColumnFilters,
 		onColumnVisibilityChange: setColumnVisibility,
+		onPaginationChange: setPagination,
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),

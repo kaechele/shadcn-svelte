@@ -44,7 +44,7 @@
 			<Button
 				variant="outline"
 				class="hidden size-8 p-0 lg:flex"
-				onclick={() => table.setPageIndex(0)}
+				onclick={() => table.firstPage()}
 				disabled={!table.getCanPreviousPage()}
 			>
 				<span class="sr-only">Go to first page</span>
@@ -71,7 +71,7 @@
 			<Button
 				variant="outline"
 				class="hidden size-8 p-0 lg:flex"
-				onclick={() => table.setPageIndex(table.getPageCount() - 1)}
+				onclick={() => table.lastPage()}
 				disabled={!table.getCanNextPage()}
 			>
 				<span class="sr-only">Go to last page</span>
