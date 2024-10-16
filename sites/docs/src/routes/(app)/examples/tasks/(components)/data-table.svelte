@@ -14,16 +14,19 @@
 	} from "@tanstack/table-core";
 	import DataTableToolbar from "./data-table-toolbar.svelte";
 	import DataTablePagination from "./data-table-pagination.svelte";
-	import { createSvelteTable } from "$lib/registry/new-york/ui/data-table/data-table.svelte.js";
+	import {
+		createSvelteTable,
+		createTableState,
+	} from "$lib/registry/new-york/ui/data-table/data-table.svelte.js";
 	import FlexRender from "$lib/registry/new-york/ui/data-table/flex-render.svelte";
 	import * as Table from "$lib/registry/new-york/ui/table/index.js";
 
 	let { columns, data }: { columns: ColumnDef<TData, TValue>[]; data: TData[] } = $props();
 
-	let rowSelection = $state<RowSelectionState>({});
-	let columnVisibility = $state<VisibilityState>({});
-	let columnFilters = $state<ColumnFiltersState>([]);
-	let sorting = $state<SortingState>([]);
+	const [getRowSelection, setRowSelection] = createTableState<RowSelectionState>({});
+	const [getColumnVisibility, setColumnVisibility] = createTableState<VisibilityState>({});
+	const [getColumnFilters, setColumnFilters] = createTableState<ColumnFiltersState>([]);
+	const [getSorting, setSorting] = createTableState<SortingState>([]);
 
 	const table = createSvelteTable({
 		get data() {
@@ -31,48 +34,24 @@
 		},
 		state: {
 			get sorting() {
-				return sorting;
+				return getSorting();
 			},
 			get columnVisibility() {
-				return columnVisibility;
+				return getColumnVisibility();
 			},
 			get rowSelection() {
-				return rowSelection;
+				return getRowSelection();
 			},
 			get columnFilters() {
-				return columnFilters;
+				return getColumnFilters();
 			},
 		},
 		columns,
 		enableRowSelection: true,
-		onRowSelectionChange: (updater) => {
-			if (typeof updater === "function") {
-				rowSelection = updater(rowSelection);
-			} else {
-				rowSelection = updater;
-			}
-		},
-		onSortingChange: (updater) => {
-			if (typeof updater === "function") {
-				sorting = updater(sorting);
-			} else {
-				sorting = updater;
-			}
-		},
-		onColumnFiltersChange: (updater) => {
-			if (typeof updater === "function") {
-				columnFilters = updater(columnFilters);
-			} else {
-				columnFilters = updater;
-			}
-		},
-		onColumnVisibilityChange: (updater) => {
-			if (typeof updater === "function") {
-				columnVisibility = updater(columnVisibility);
-			} else {
-				columnVisibility = updater;
-			}
-		},
+		onRowSelectionChange: setRowSelection,
+		onSortingChange: setSorting,
+		onColumnFiltersChange: setColumnFilters,
+		onColumnVisibilityChange: setColumnVisibility,
 		getCoreRowModel: getCoreRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
 		getPaginationRowModel: getPaginationRowModel(),

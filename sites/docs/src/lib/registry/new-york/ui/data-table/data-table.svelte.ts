@@ -3,6 +3,7 @@ import {
 	type TableOptions,
 	type TableOptionsResolved,
 	type TableState,
+	type Updater,
 	createTable,
 } from "@tanstack/table-core";
 
@@ -114,4 +115,22 @@ export function mergeObjects(...sources: any): any {
 		}
 	}
 	return target;
+}
+
+/**
+ * Helper function to quickly instantiate new state containers for table features
+ * Source: https://github.com/TanStack/table/blob/9578c73c84573e3bd8fdb9b5000dd6f83c8d5b2e/examples/svelte/column-ordering/src/state.svelte.ts
+ * @param initialValue Initial state passed to the state rune
+ * @returns Array with a getter and setter function for the state
+ */
+export function createTableState<T>(initialValue: T): [() => T, (updater: Updater<T>) => void] {
+	let value = $state(initialValue);
+
+	return [
+		() => value,
+		(updater: Updater<T>) => {
+			if (updater instanceof Function) value = updater(value);
+			else value = updater;
+		},
+	];
 }
